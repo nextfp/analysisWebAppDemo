@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import "./App.css";
-import carImg from "/public/car.png";
+import carImg from "/public/car.svg";
 import { Card } from "./components/ui/card";
+import { ThemeProvider } from "./components/theme-provider";
 
 let sendeddata = {
   vector: [0, 0, 90],
@@ -71,7 +72,7 @@ function makedata(data: typeof sendeddata) {
 function App() {
   // input 要素に入力された値
   const [inputVal, setInputVal] = useState([0, 0, 90]);
-  const [speed, setspeed] = useState("50km");
+  const [speed, setspeed] = useState("50km/h");
   const [rotate, setRotate] = useState(0);
   const [pedal, setPedal] = useState([0, 0]);
   const [rpm, setRpm] = useState(0);
@@ -82,7 +83,7 @@ function App() {
     const intervalId = setInterval(() => {
       sendeddata = makedata(sendeddata);
       setInputVal(sendeddata.vector);
-      setspeed(sendeddata.speed + "km");
+      setspeed(sendeddata.speed + "km/h");
       setRpm(sendeddata.rpm);
       setRotate(sendeddata.rotate);
       setPedal(sendeddata.pedal);
@@ -93,79 +94,92 @@ function App() {
   }, []);
 
   return (
-    <div className="flex flex-col gap-6">
-      {/* setInterval 内で作った文字列を表示 */}
-      <Card className="flex gap-6 items-stretch p-2">
-        <div className="flex flex-col gap-3">
-          <div>
-            {Math.floor(Math.floor(inputVal[0] * 10) / 10)},
-            {Math.floor(inputVal[1] * 10) / 10}
-          </div>
-          <Card>{speed}</Card>
-          <Card>
-            <img
-              className="mx-auto"
-              style={{
-                transform: `rotate(${rotate}deg)`,
-                transformOrigin: "center center",
-                width: "100px",
-              }}
-              src="https://nextfp.github.io/note/cdn/SteeringWheel.png"
-              alt=""
-            />
-          </Card>
-        </div>
-        <Card className="flex flex-col p-2">
-          <div className="flex gap-10 items-end mt-auto">
-            <div>
-              <div
-                className="bg-red-500 mx-auto"
-                style={{
-                  width: "50px",
-                  height: `${pedal[0]}px`,
-                }}
-              />
-              <p>ブレーキ{pedal[0]}%</p>
-            </div>
-            <div>
-              <div
-                className="bg-blue-500 mx-auto"
-                style={{
-                  width: "50px",
-                  height: `${pedal[1]}px`,
-                }}
-              />
-              <p>アクセル{pedal[1]}%</p>
-            </div>
-          </div>
-        </Card>
-        <Card className="flex p-2">
-          <div className=" w-[140px] self-end">
-            <div className="relative flex aspect-[2] items-center justify-center overflow-hidden rounded-t-full bg-blue-400">
-              <div
-                className={`absolute top-0 aspect-square w-full bg-gradient-to-tr from-transparent from-50% to-white to-50% transition-transform duration-500`}
-                style={{ transform: `rotate(${(rpm / 10000) * 180}deg)` }}
-              ></div>
-              <div className="absolute top-1/4 flex aspect-square w-3/4 justify-center rounded-full bg-blue-100"></div>
-              <div className="absolute bottom-0 w-full truncate text-center leading-none">
-                {rpm}rpm
+    <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+      <section className="grid grid-cols-6 mt-7">
+        <div className=" col-span-4 col-start-2">
+          <div className="flex flex-col gap-6">
+            {/* setInterval 内で作った文字列を表示 */}
+            <Card>
+              <div className="flex gap-6 items-stretch p-2 mx-auto w-fit">
+                <div className="flex flex-col gap-3">
+                  <div className="mx-auto">
+                    {Math.floor(Math.floor(inputVal[0] * 10) / 10)},
+                    {Math.floor(inputVal[1] * 10) / 10}
+                  </div>
+                  <Card>
+                    <div className="mx-auto w-fit">{speed}</div>
+                  </Card>
+                  <Card className="h-20">
+                    <img
+                      className="mx-auto"
+                      style={{
+                        transform: `rotate(${rotate}deg)`,
+                        transformOrigin: "center center",
+                        width: "100px",
+                      }}
+                      src="https://nextfp.github.io/note/cdn/SteeringWheel.png"
+                      alt=""
+                    />
+                  </Card>
+                </div>
+                <Card className="flex flex-col p-2">
+                  <div className="flex gap-10 items-end mt-auto">
+                    <div>
+                      <div
+                        className="mx-auto bg-[#1E7B94]"
+                        style={{
+                          width: "50px",
+                          height: `${pedal[0]}px`,
+                        }}
+                      />
+                      <p>ブレーキ{pedal[0]}%</p>
+                    </div>
+                    <div>
+                      <div
+                        className="mx-auto bg-[#3CC08E]"
+                        style={{
+                          width: "50px",
+                          height: `${pedal[1]}px`,
+                        }}
+                      />
+                      <p>アクセル{pedal[1]}%</p>
+                    </div>
+                  </div>
+                </Card>
+                <Card className="flex p-2">
+                  <div className=" w-[140px] self-end">
+                    <div className="relative flex aspect-[2] items-center justify-center overflow-hidden rounded-t-full bg-[#3CC08E]">
+                      <div
+                        className={`absolute top-0 aspect-square w-full bg-gradient-to-tr from-transparent from-50% to-white to-50% transition-transform duration-500`}
+                        style={{
+                          transform: `rotate(${(rpm / 10000) * 180}deg)`,
+                        }}
+                      ></div>
+                      <div className="absolute top-1/4 flex aspect-square w-3/4 justify-center rounded-full bg-blue-100"></div>
+                      <div className="absolute bottom-0 w-full truncate text-center leading-none text-black">
+                        {rpm}rpm
+                      </div>
+                    </div>
+                  </div>
+                </Card>
               </div>
-            </div>
+            </Card>
+            <Card className="h-[700px]">
+              <img
+                src={carImg}
+                alt="car"
+                style={{
+                  height: "100px",
+                  transform: `translateX(${inputVal[0]}px) translateY(${
+                    inputVal[1]
+                  }px) rotate(${inputVal[2] - 90}deg)`,
+                }}
+              />
+            </Card>
           </div>
-        </Card>
-      </Card>
-      <Card className="h-[500px]">
-        <img
-          src={carImg}
-          alt="car"
-          style={{
-            width: "50px",
-            height: "50px",
-            transform: `translateX(${inputVal[0]}px) translateY(${inputVal[1]}px) rotate(${inputVal[2]}deg)`,
-          }}
-        />
-      </Card>
-    </div>
+        </div>
+      </section>
+    </ThemeProvider>
   );
 }
 
